@@ -11,7 +11,9 @@
  * The array list data structure is implemented as a struct with a resizeable array of void *
  * type elements. The array's capacity is maintained along with the # of elements that the array
  * currently has (capacity >= # of elements). When # of elements reaches the capacity, the array
- * is increased to 1.5 times its original size.
+ * is increased to 1.5 times its original size. The array inside the array list stores references
+ * to the objects that are passed in. This code doesn't allocate/free memory for such objectss -
+ * that is expected to be done by the user of this data structure.
  *
  * @bug No bugs are know at this point.
  */
@@ -21,7 +23,7 @@
 #include <string.h>
 #include "array_list.h"
 
-#define DEFAULT_NUM_OF_ELEMENTS 10
+#define DEFAULT_NUM_OF_ELEMENTS 2      //This ought to be 10 but then testing would take more time.
 
 /**
  * @brief Array list data structure.
@@ -93,6 +95,10 @@ static boolean resize_array_list (array_list_t *array_list)
 /**
  * @brief Add an element to the array list at the specified index.
  *
+ * @details
+ * If you add an element to the middle of the array, the array elements
+ * starting from that index are moved to the right to make space.
+ *
  * @param[in] array_list Pointer to the array list data structure.
  * @param[in] new_element The element we are asked to add.
  * @param[in] index      Index at which we need to add the new element.
@@ -106,6 +112,7 @@ boolean add_to_array_list (array_list_t *array_list, void *new_element, unsigned
         return FALSE;
     }
     
+    
     if (array_list->num_of_elements == array_list->capacity) {
         if (!resize_array_list(array_list)) {
             
@@ -116,9 +123,9 @@ boolean add_to_array_list (array_list_t *array_list, void *new_element, unsigned
     if (index != array_list->num_of_elements) {
         unsigned int elements_to_move;
         
-        elements_to_move = array_list->num_of_elements - index - 1;
-        memmove(&array_list->array[index], &array_list->array[index+1],
-                elements_to_move);
+        elements_to_move = array_list->num_of_elements - index;
+        memmove(&array_list->array[index+1], &array_list->array[index],
+                elements_to_move * sizeof(void *));
     }
     array_list->array[index] = new_element;
     array_list->num_of_elements++;
@@ -140,12 +147,12 @@ boolean delete_from_array_list (array_list_t *array_list, unsigned int index)
         return FALSE;
     }
     
-    if (index != array_list->num_of_elements) {
+    if (index != array_list->num_of_elements - 1) {
         unsigned int elements_to_move;
         
-        elements_to_move = array_list->num_of_elements - index;
-        memmove(&array_list->array[index+1], &array_list->array[index],
-                elements_to_move);
+        elements_to_move = array_list->num_of_elements - index - 1;
+        memmove(&array_list->array[index], &array_list->array[index+1],
+                elements_to_move * sizeof(void *));
     }
     
     array_list->num_of_elements--;
@@ -162,7 +169,7 @@ boolean delete_from_array_list (array_list_t *array_list, unsigned int index)
  *
  * @return TRUE if sucessful, FALSE otherwise.
  */
-boolean set_in_array_list (array_list_t *array_list, void * new_element, unsigned int index)
+boolean set_in_array_list (array_list_t *array_list, void *new_element, unsigned int index)
 {
     if (index > array_list->num_of_elements - 1) {
         
@@ -170,6 +177,28 @@ boolean set_in_array_list (array_list_t *array_list, void * new_element, unsigne
     }
     
     array_list->array[index] = new_element;
+    
+    return TRUE;
+}
+
+/**
+ * @brief Get an element from the specified index in the array list.
+ *
+ * @param[in] array_list Pointer to the array list data structure.
+ * @param[out] ref_to_element Reference to memory where we will return place
+ *                            the reference to the object stored in array list.
+ * @param[in] index Index from where we need to obtain the requested element.
+ *
+ * @return TRUE if sucessful, FALSE otherwise.
+ */
+boolean get_from_array_list (array_list_t *array_list, void **ref_to_element, unsigned int index)
+{
+    if (index > array_list->num_of_elements - 1) {
+        
+        return FALSE;
+    }
+    
+    *ref_to_element = array_list->array[index];
     
     return TRUE;
 }

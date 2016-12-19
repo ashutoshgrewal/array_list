@@ -24,6 +24,7 @@ array_list_t *create_array_list (void);
 boolean add_to_array_list (array_list_t *, void *, unsigned int);
 boolean delete_from_array_list (array_list_t *, unsigned int);
 boolean set_in_array_list (array_list_t *, void *, unsigned int);
+boolean get_from_array_list (array_list_t *, void **, unsigned int);
 void destroy_array_list (array_list_t *);
 
 #endif /* ARRAY_LIST_H */
