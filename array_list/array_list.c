@@ -185,8 +185,8 @@ boolean set_in_array_list (array_list_t *array_list, void *new_element, unsigned
  * @brief Get an element from the specified index in the array list.
  *
  * @param[in] array_list Pointer to the array list data structure.
- * @param[out] ref_to_element Reference to memory where we will return place
- *                            the reference to the object stored in array list.
+ * @param[out] ref_to_element Reference to memory where we will place the
+ *                            reference to the object stored in array list.
  * @param[in] index Index from where we need to obtain the requested element.
  *
  * @return TRUE if sucessful, FALSE otherwise.
