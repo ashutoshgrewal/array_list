@@ -32,5 +32,6 @@ int main(int argc, const char * argv[]) {
     get_from_array_list(array_list, &ref_to_object, index);
     printf("Value at index %u is %d\n", index, *((int *)ref_to_object));
     
+    destroy_array_list(array_list);
     return 0;
 }
